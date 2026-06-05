@@ -13,6 +13,27 @@ Potential features:
 - Nutritional info aggregated from ingredients
 - Recipe ratings/favorites
 
+## Getting Started
+
+**Prerequisites:** [UV](https://docs.astral.sh/uv/getting-started/installation/) and Python 3.11+
+
+1. Install dependencies:
+   ```
+   uv sync
+   ```
+
+2. Initialize the database:
+   ```
+   uv run python -c "import sqlite3; conn = sqlite3.connect('cookbook.db'); conn.executescript(open('database/schema.sql').read()); conn.commit()"
+   ```
+
+3. Run the app:
+   ```
+   uv run app.py
+   ```
+
+4. Open your browser and go to `http://localhost:5000`
+
 ## Tech Stack
 
 - **Flask** — Python web framework, handles routes and serves pages
