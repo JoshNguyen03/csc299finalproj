@@ -1,8 +1,11 @@
+from collections import defaultdict
 from fractions import Fraction
 from flask import Blueprint, render_template, request, redirect, url_for
 from . import get_db
 
 main = Blueprint("main", __name__)
+
+DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
 def _parse_quantity(s):
@@ -169,6 +172,70 @@ def delete_recipe(recipe_id):
     db.execute("DELETE FROM recipes WHERE id = ?", (recipe_id,))
     db.commit()
     return redirect(url_for("main.index"))
+
+
+@main.route("/plan")
+def plan():
+    db = get_db()
+    all_recipes = db.execute("SELECT id, name FROM recipes ORDER BY name").fetchall()
+    entries = db.execute(
+        "SELECT mp.id, mp.day, r.name AS recipe_name, r.id AS recipe_id "
+        "FROM meal_plan mp JOIN recipes r ON mp.recipe_id = r.id"
+    ).fetchall()
+    plan_by_day = {day: [] for day in DAYS}
+    for entry in entries:
+        if entry["day"] in plan_by_day:
+            plan_by_day[entry["day"]].append(entry)
+    return render_template("meal_plan.html", plan_by_day=plan_by_day, days=DAYS, all_recipes=all_recipes)
+
+
+@main.route("/plan/add", methods=["POST"])
+def plan_add():
+    db = get_db()
+    recipe_id = request.form.get("recipe_id", type=int)
+    day = request.form.get("day")
+    if recipe_id and day in DAYS:
+        db.execute("INSERT INTO meal_plan (recipe_id, day) VALUES (?, ?)", (recipe_id, day))
+        db.commit()
+    return redirect(url_for("main.plan"))
+
+
+@main.route("/plan/remove/<int:entry_id>", methods=["POST"])
+def plan_remove(entry_id):
+    db = get_db()
+    db.execute("DELETE FROM meal_plan WHERE id = ?", (entry_id,))
+    db.commit()
+    return redirect(url_for("main.plan"))
+
+
+@main.route("/plan/shopping-list")
+def shopping_list():
+    db = get_db()
+    rows = db.execute(
+        "SELECT i.name, ri.quantity, ri.unit "
+        "FROM meal_plan mp "
+        "JOIN recipe_ingredients ri ON mp.recipe_id = ri.recipe_id "
+        "JOIN ingredients i ON ri.ingredient_id = i.id"
+    ).fetchall()
+
+    totals = defaultdict(lambda: {"numeric": 0.0, "non_numeric": [], "has_numeric": False})
+    for row in rows:
+        key = (row["name"], row["unit"])
+        parsed = _parse_quantity(row["quantity"])
+        if parsed is not None:
+            totals[key]["numeric"] += parsed
+            totals[key]["has_numeric"] = True
+        else:
+            totals[key]["non_numeric"].append(row["quantity"])
+
+    items = []
+    for (name, unit), data in sorted(totals.items()):
+        if data["has_numeric"]:
+            items.append({"name": name, "quantity": _format_quantity(data["numeric"]), "unit": unit})
+        for qty in sorted(set(data["non_numeric"])):
+            items.append({"name": name, "quantity": qty, "unit": unit})
+
+    return render_template("shopping_list.html", items=items)
 
 
 @main.route("/search")

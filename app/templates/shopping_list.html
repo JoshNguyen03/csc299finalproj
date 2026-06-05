@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Shopping List{% endblock %}
+{% block content %}
+<div style="display: flex; align-items: baseline; justify-content: space-between;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
+    <h1 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Shopping List</h1>
+    <a href="/plan" class="btn" style="font-size: 12px;">← meal plan</a>
+</div>
+
+{% if items %}
+<ul>
+    {% for item in items %}
+    <li>
+        {{ item['quantity'] }}{% if item['unit'] %} {{ item['unit'] }}{% endif %}
+        <span style="color: var(--text);">{{ item['name'] }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p style="color: var(--text-dim); font-size: 13px;">
+    Your meal plan is empty — add some recipes to generate a list.
+</p>
+{% endif %}
+{% endblock %}

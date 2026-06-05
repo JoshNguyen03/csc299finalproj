@@ -34,6 +34,18 @@ def _migrate_db():
     if "is_favorite" not in columns:
         db.execute("ALTER TABLE recipes ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0")
         db.commit()
+    plan_table = db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='meal_plan'"
+    ).fetchone()
+    if not plan_table:
+        db.execute(
+            "CREATE TABLE meal_plan ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "recipe_id INTEGER NOT NULL, "
+            "day TEXT NOT NULL, "
+            "FOREIGN KEY (recipe_id) REFERENCES recipes(id))"
+        )
+        db.commit()
 
 def get_db():
     from flask import current_app

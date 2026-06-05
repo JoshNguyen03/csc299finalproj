@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Meal Plan{% endblock %}
+{% block content %}
+<div style="display: flex; align-items: baseline; justify-content: space-between;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
+    <h1 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Meal Plan</h1>
+    <a href="/plan/shopping-list" class="btn" style="font-size: 12px;">shopping list →</a>
+</div>
+
+<div class="plan-grid">
+    {% for day in days %}
+    <div class="plan-day">
+        <div class="plan-day-header">{{ day }}</div>
+        <ul class="plan-recipes">
+            {% for entry in plan_by_day[day] %}
+            <li>
+                <a href="/recipe/{{ entry['recipe_id'] }}" title="{{ entry['recipe_name'] }}">{{ entry['recipe_name'] }}</a>
+                <form method="post" action="/plan/remove/{{ entry['id'] }}" style="display:inline; flex-shrink:0;">
+                    <button type="submit" title="Remove">×</button>
+                </form>
+            </li>
+            {% else %}
+            <li class="empty">—</li>
+            {% endfor %}
+        </ul>
+        <form method="post" action="/plan/add" class="plan-add-form">
+            <input type="hidden" name="day" value="{{ day }}">
+            <select name="recipe_id">
+                <option value="" disabled selected>add…</option>
+                {% for r in all_recipes %}
+                <option value="{{ r['id'] }}">{{ r['name'] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">+</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

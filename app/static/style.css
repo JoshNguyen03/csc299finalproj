@@ -283,6 +283,108 @@ ul li a:hover {
     border-color: var(--accent-dim);
 }
 
+/* Meal plan grid */
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.plan-day {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    min-width: 0;
+}
+
+.plan-day-header {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.plan-recipes {
+    margin-bottom: 8px;
+    min-height: 20px;
+}
+
+.plan-recipes li {
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+}
+
+.plan-recipes li a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    font-size: 11px;
+    color: var(--text);
+}
+
+.plan-recipes li a:hover {
+    color: var(--accent);
+}
+
+.plan-recipes li.empty {
+    color: var(--text-muted);
+}
+
+.plan-recipes li button {
+    padding: 0 3px;
+    font-size: 13px;
+    border-color: transparent;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.plan-recipes li button:hover {
+    color: #c05a5a;
+    background: transparent;
+    border-color: transparent;
+}
+
+.plan-add-form {
+    display: flex;
+    gap: 4px;
+}
+
+.plan-add-form select {
+    flex: 1;
+    min-width: 0;
+    background: var(--panel);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 4px;
+    font-size: 11px;
+    font-family: inherit;
+}
+
+.plan-add-form select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.plan-add-form button {
+    padding: 3px 7px;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
 /* Tag chips */
 .tag {
     display: inline-block;

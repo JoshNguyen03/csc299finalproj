@@ -15,6 +15,13 @@ CREATE TABLE IF NOT EXISTS ingredients (
     substitutes TEXT
 );
 
+CREATE TABLE IF NOT EXISTS meal_plan (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    recipe_id INTEGER NOT NULL,
+    day TEXT NOT NULL,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
+
 CREATE TABLE IF NOT EXISTS recipe_ingredients (
     recipe_id INTEGER NOT NULL,
     ingredient_id INTEGER NOT NULL,
