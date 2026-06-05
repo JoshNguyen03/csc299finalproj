@@ -7,7 +7,12 @@
 <h2>Ingredients</h2>
 <ul>
     {% for ing in ingredients %}
-    <li>{{ ing['quantity'] }} {{ ing['unit'] }} {{ ing['name'] }}</li>
+    <li>
+        {{ ing['quantity'] }} {{ ing['unit'] }} {{ ing['name'] }}
+        {% if ing['substitutes'] %}
+        <small>— substitutes: {{ ing['substitutes'] }}</small>
+        {% endif %}
+    </li>
     {% endfor %}
 </ul>
 

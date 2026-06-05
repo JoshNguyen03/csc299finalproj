@@ -30,6 +30,7 @@
                 <th>Ingredient</th>
                 <th>Quantity</th>
                 <th>Unit</th>
+                <th>Substitutes (comma-separated)</th>
             </tr>
         </thead>
         <tbody id="ingredients-body">
@@ -37,6 +38,7 @@
                 <td><input type="text" name="ingredient_name" placeholder="e.g. flour"></td>
                 <td><input type="text" name="ingredient_quantity" placeholder="e.g. 2"></td>
                 <td><input type="text" name="ingredient_unit" placeholder="e.g. cups"></td>
+                <td><input type="text" name="ingredient_substitutes" placeholder="e.g. almond flour"></td>
             </tr>
         </tbody>
     </table>
@@ -57,6 +59,7 @@
             <td><input type="text" name="ingredient_name" placeholder="e.g. flour"></td>
             <td><input type="text" name="ingredient_quantity" placeholder="e.g. 2"></td>
             <td><input type="text" name="ingredient_unit" placeholder="e.g. cups"></td>
+            <td><input type="text" name="ingredient_substitutes" placeholder="e.g. almond flour"></td>
         `;
         tbody.appendChild(row);
     }

@@ -14,7 +14,7 @@ def recipe(recipe_id):
     db = get_db()
     recipe = db.execute("SELECT * FROM recipes WHERE id = ?", (recipe_id,)).fetchone()
     ingredients = db.execute(
-        "SELECT i.name, ri.quantity, ri.unit FROM ingredients i "
+        "SELECT i.name, i.substitutes, ri.quantity, ri.unit FROM ingredients i "
         "JOIN recipe_ingredients ri ON i.id = ri.ingredient_id "
         "WHERE ri.recipe_id = ?", (recipe_id,)
     ).fetchall()
@@ -40,16 +40,22 @@ def new_recipe():
         names = request.form.getlist("ingredient_name")
         quantities = request.form.getlist("ingredient_quantity")
         units = request.form.getlist("ingredient_unit")
+        substitutes = request.form.getlist("ingredient_substitutes")
 
-        for ing_name, qty, unit in zip(names, quantities, units):
+        for ing_name, qty, unit, subs in zip(names, quantities, units, substitutes):
             ing_name = ing_name.strip()
             if not ing_name:
                 continue
             existing = db.execute("SELECT id FROM ingredients WHERE name = ?", (ing_name,)).fetchone()
             if existing:
                 ing_id = existing["id"]
+                if subs.strip():
+                    db.execute("UPDATE ingredients SET substitutes = ? WHERE id = ?", (subs.strip(), ing_id))
             else:
-                ing_cursor = db.execute("INSERT INTO ingredients (name) VALUES (?)", (ing_name,))
+                ing_cursor = db.execute(
+                    "INSERT INTO ingredients (name, substitutes) VALUES (?, ?)",
+                    (ing_name, subs.strip() or None)
+                )
                 ing_id = ing_cursor.lastrowid
             db.execute(
                 "INSERT OR IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES (?, ?, ?, ?)",
