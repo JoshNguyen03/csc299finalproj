@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% block title %}New Recipe{% endblock %}
+{% block title %}{{ "Edit" if recipe else "New" }} Recipe{% endblock %}
 {% block content %}
-<h1>Add a Recipe</h1>
-<form method="post" action="/recipe/new">
+<h1>{{ "Edit" if recipe else "Add a" }} Recipe</h1>
+<form method="post" action="{{ '/recipe/' ~ recipe['id'] ~ '/edit' if recipe else '/recipe/new' }}">
     <div class="form-group">
         <label>Name</label>
-        <input type="text" name="name" required>
+        <input type="text" name="name" required value="{{ recipe['name'] if recipe else '' }}">
     </div>
 
     <div style="display: flex; gap: 16px;">
         <div class="form-group" style="flex: 1;">
             <label>Prep Time (min)</label>
-            <input type="number" name="prep_time" min="0">
+            <input type="number" name="prep_time" min="0" value="{{ recipe['prep_time'] if recipe else '' }}">
         </div>
         <div class="form-group" style="flex: 1;">
             <label>Cook Time (min)</label>
-            <input type="number" name="cook_time" min="0">
+            <input type="number" name="cook_time" min="0" value="{{ recipe['cook_time'] if recipe else '' }}">
         </div>
         <div class="form-group" style="flex: 1;">
             <label>Servings</label>
-            <input type="number" name="servings" min="1">
+            <input type="number" name="servings" min="1" value="{{ recipe['servings'] if recipe else '' }}">
         </div>
     </div>
 
     <div class="form-group">
         <label>Tags (comma-separated, e.g. vegan, gluten-free)</label>
-        <input type="text" name="tags">
+        <input type="text" name="tags" value="{{ recipe['tags'] if recipe else '' }}">
     </div>
 
     <h2>Ingredients</h2>
@@ -39,19 +39,30 @@
             </tr>
         </thead>
         <tbody id="ingredients-body">
-            <tr>
-                <td><input type="text" name="ingredient_name" placeholder="e.g. flour"></td>
-                <td><input type="text" name="ingredient_quantity" placeholder="e.g. 2"></td>
-                <td><input type="text" name="ingredient_unit" placeholder="e.g. cups"></td>
-                <td><input type="text" name="ingredient_substitutes" placeholder="e.g. almond flour"></td>
-            </tr>
+            {% if ingredients %}
+                {% for ing in ingredients %}
+                <tr>
+                    <td><input type="text" name="ingredient_name" value="{{ ing['name'] }}"></td>
+                    <td><input type="text" name="ingredient_quantity" value="{{ ing['quantity'] }}"></td>
+                    <td><input type="text" name="ingredient_unit" value="{{ ing['unit'] }}"></td>
+                    <td><input type="text" name="ingredient_substitutes" value="{{ ing['substitutes'] or '' }}"></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td><input type="text" name="ingredient_name" placeholder="e.g. flour"></td>
+                    <td><input type="text" name="ingredient_quantity" placeholder="e.g. 2"></td>
+                    <td><input type="text" name="ingredient_unit" placeholder="e.g. cups"></td>
+                    <td><input type="text" name="ingredient_substitutes" placeholder="e.g. almond flour"></td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
     <button type="button" onclick="addRow()" style="margin-bottom: 24px;">+ Add Ingredient</button>
 
     <div class="form-group">
         <label>Instructions</label>
-        <textarea name="instructions" rows="10"></textarea>
+        <textarea name="instructions" rows="10">{{ recipe['instructions'] if recipe else '' }}</textarea>
     </div>
 
     <button type="submit">Save Recipe</button>

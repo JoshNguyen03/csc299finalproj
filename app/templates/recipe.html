@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{ recipe['name'] }}{% endblock %}
 {% block content %}
-<h1>{{ recipe['name'] }}</h1>
-<div class="meta">
+<div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px;">
+    <h1 style="margin-bottom: 0; border-bottom: none;">{{ recipe['name'] }}</h1>
+    <a href="/recipe/{{ recipe['id'] }}/edit" class="btn" style="font-size: 12px;">edit</a>
+    <form method="post" action="/recipe/{{ recipe['id'] }}/delete" style="display:inline;"
+          onsubmit="return confirm('Delete this recipe?')">
+        <button type="submit" style="font-size: 12px; color: #c05a5a; border-color: #5a2a2a;">delete</button>
+    </form>
+</div>
+<div class="meta" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;">
     <span>prep {{ recipe['prep_time'] or '—' }} min</span>
     <span>cook {{ recipe['cook_time'] or '—' }} min</span>
     <span>serves {{ recipe['servings'] or '—' }}</span>
