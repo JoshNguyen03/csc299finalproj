@@ -13,7 +13,23 @@ def create_app(test_config=None):
 
     app.teardown_appcontext(close_db)
 
+    with app.app_context():
+        _migrate_db()
+
     return app
+
+
+def _migrate_db():
+    db = get_db()
+    table = db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='recipes'"
+    ).fetchone()
+    if not table:
+        return
+    columns = [row[1] for row in db.execute("PRAGMA table_info(recipes)").fetchall()]
+    if "is_favorite" not in columns:
+        db.execute("ALTER TABLE recipes ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0")
+        db.commit()
 
 def get_db():
     from flask import current_app

@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS recipes (
     prep_time INTEGER,
     cook_time INTEGER,
     servings INTEGER,
-    tags TEXT
+    tags TEXT,
+    is_favorite INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS ingredients (

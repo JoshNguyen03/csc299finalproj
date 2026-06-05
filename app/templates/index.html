@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 {% block title %}All Recipes{% endblock %}
 {% block content %}
-<h1>All Recipes</h1>
+<div style="display: flex; align-items: baseline; justify-content: space-between;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
+    <h1 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">
+        {{ "Favorites" if favorites_only else "All Recipes" }}
+    </h1>
+    {% if favorites_only %}
+    <a href="/" class="btn" style="font-size: 12px;">all recipes</a>
+    {% else %}
+    <a href="/?favorites=1" class="btn" style="font-size: 12px;">★ favorites</a>
+    {% endif %}
+</div>
 <ul>
     {% for recipe in recipes %}
     <li style="display: flex; align-items: center; justify-content: space-between;">
-        <a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a>
+        <span style="display: flex; align-items: center; gap: 8px;">
+            {% if recipe['is_favorite'] %}<span style="color: #c8972a; font-size: 12px;">★</span>{% endif %}
+            <a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a>
+        </span>
         <span>
             {% if recipe['tags'] %}{% for tag in recipe['tags'].split(',') %}<a href="/search?tags={{ tag|trim }}" class="tag">{{ tag|trim }}</a>{% endfor %}{% endif %}
         </span>

@@ -56,8 +56,12 @@ def save_ingredients(db, recipe_id, names, quantities, units, substitutes):
 @main.route("/")
 def index():
     db = get_db()
-    recipes = db.execute("SELECT * FROM recipes").fetchall()
-    return render_template("index.html", recipes=recipes)
+    favorites_only = request.args.get("favorites") == "1"
+    if favorites_only:
+        recipes = db.execute("SELECT * FROM recipes WHERE is_favorite = 1").fetchall()
+    else:
+        recipes = db.execute("SELECT * FROM recipes ORDER BY is_favorite DESC, name").fetchall()
+    return render_template("index.html", recipes=recipes, favorites_only=favorites_only)
 
 
 @main.route("/recipe/new", methods=["GET", "POST"])
@@ -145,6 +149,17 @@ def edit_recipe(recipe_id):
         "WHERE ri.recipe_id = ?", (recipe_id,)
     ).fetchall()
     return render_template("recipe_form.html", recipe=r, ingredients=ingredients)
+
+
+@main.route("/recipe/<int:recipe_id>/favorite", methods=["POST"])
+def toggle_favorite(recipe_id):
+    db = get_db()
+    row = db.execute("SELECT is_favorite FROM recipes WHERE id = ?", (recipe_id,)).fetchone()
+    if row:
+        db.execute("UPDATE recipes SET is_favorite = ? WHERE id = ?",
+                   (0 if row["is_favorite"] else 1, recipe_id))
+        db.commit()
+    return redirect(url_for("main.recipe", recipe_id=recipe_id))
 
 
 @main.route("/recipe/<int:recipe_id>/delete", methods=["POST"])

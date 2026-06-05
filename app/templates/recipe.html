@@ -8,6 +8,12 @@
           onsubmit="return confirm('Delete this recipe?')">
         <button type="submit" style="font-size: 12px; color: #c05a5a; border-color: #5a2a2a;">delete</button>
     </form>
+    <form method="post" action="/recipe/{{ recipe['id'] }}/favorite" style="display:inline;">
+        <button type="submit" style="font-size: 15px; border-color: transparent;
+            {% if recipe['is_favorite'] %}color: #c8972a;{% else %}color: var(--text-muted);{% endif %}">
+            {{ '★' if recipe['is_favorite'] else '☆' }}
+        </button>
+    </form>
 </div>
 <div class="meta" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;">
     <span>prep {{ recipe['prep_time'] or '—' }} min</span>
