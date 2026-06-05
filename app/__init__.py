@@ -20,11 +20,15 @@ def create_app(test_config=None):
 
 
 def _migrate_db():
+    import os
     db = get_db()
     table = db.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='recipes'"
     ).fetchone()
     if not table:
+        schema = os.path.join(os.path.dirname(__file__), "..", "database", "schema.sql")
+        with open(schema) as f:
+            db.executescript(f.read())
         return
     columns = [row[1] for row in db.execute("PRAGMA table_info(recipes)").fetchall()]
     if "is_favorite" not in columns:
