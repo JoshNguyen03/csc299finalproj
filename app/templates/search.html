@@ -1,8 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Search Recipes{% endblock %}
 {% block content %}
-<h1>Search by Ingredient</h1>
+<h1>Search Recipes</h1>
 <form method="get" action="/search">
+    {% if all_tags %}
+    <h2>Filter by Tag</h2>
+    <div class="ingredient-grid" style="margin-bottom: 20px;">
+        {% for tag in all_tags %}
+        <label>
+            <input type="checkbox" name="tags" value="{{ tag }}"
+                {% if tag in selected_tags %}checked{% endif %}>
+            {{ tag }}
+        </label>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2>Filter by Ingredient</h2>
     <div class="ingredient-grid">
         {% for ing in all_ingredients %}
         <label>
@@ -12,17 +26,22 @@
         </label>
         {% endfor %}
     </div>
-    <button type="submit">Find Recipes</button>
+    <button type="submit" style="margin-top: 4px;">Find Recipes</button>
 </form>
 
 {% if recipes %}
 <h2>Matching Recipes</h2>
 <ul>
     {% for recipe in recipes %}
-    <li><a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a></li>
+    <li style="display: flex; align-items: center; justify-content: space-between;">
+        <a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a>
+        <span>
+            {% if recipe['tags'] %}{% for tag in recipe['tags'].split(',') %}<a href="/search?tags={{ tag|trim }}" class="tag">{{ tag|trim }}</a>{% endfor %}{% endif %}
+        </span>
+    </li>
     {% endfor %}
 </ul>
-{% elif selected %}
-<p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes found with those ingredients.</p>
+{% elif selected or selected_tags %}
+<p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes found matching those filters.</p>
 {% endif %}
 {% endblock %}

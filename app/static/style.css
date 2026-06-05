@@ -283,6 +283,32 @@ ul li a:hover {
     border-color: var(--accent-dim);
 }
 
+/* Tag chips */
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-left: 4px;
+    font-size: 11px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    border-radius: 3px;
+    text-decoration: none;
+    transition: background 0.1s, border-color 0.1s;
+}
+
+.tag:hover {
+    background: var(--accent-glow);
+    border-color: var(--accent);
+    text-decoration: none;
+}
+
+.ingredient-grid label:has(input:checked) {
+    background: var(--selected-bg);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
 /* Scrollbars */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

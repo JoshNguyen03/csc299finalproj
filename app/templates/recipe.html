@@ -13,7 +13,7 @@
     <span>prep {{ recipe['prep_time'] or '—' }} min</span>
     <span>cook {{ recipe['cook_time'] or '—' }} min</span>
     <span>serves {{ recipe['servings'] or '—' }}</span>
-    {% if recipe['tags'] %}<span>{{ recipe['tags'] }}</span>{% endif %}
+    {% if recipe['tags'] %}{% for tag in recipe['tags'].split(',') %}<a href="/search?tags={{ tag|trim }}" class="tag">{{ tag|trim }}</a>{% endfor %}{% endif %}
 </div>
 
 <h2>Ingredients</h2>

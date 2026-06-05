@@ -119,15 +119,37 @@ def delete_recipe(recipe_id):
 def search():
     db = get_db()
     selected = request.args.getlist("ingredients")
+    selected_tags = request.args.getlist("tags")
+
     recipes = []
-    if selected:
-        placeholders = ",".join("?" * len(selected))
-        recipes = db.execute(
-            f"SELECT DISTINCT r.* FROM recipes r "
-            f"JOIN recipe_ingredients ri ON r.id = ri.recipe_id "
-            f"JOIN ingredients i ON i.id = ri.ingredient_id "
-            f"WHERE i.name IN ({placeholders})",
-            selected
-        ).fetchall()
+    if selected or selected_tags:
+        if selected:
+            placeholders = ",".join("?" * len(selected))
+            recipes = db.execute(
+                f"SELECT DISTINCT r.* FROM recipes r "
+                f"JOIN recipe_ingredients ri ON r.id = ri.recipe_id "
+                f"JOIN ingredients i ON i.id = ri.ingredient_id "
+                f"WHERE i.name IN ({placeholders})",
+                selected
+            ).fetchall()
+        else:
+            recipes = db.execute("SELECT * FROM recipes").fetchall()
+
+        if selected_tags:
+            def matches_tags(recipe):
+                recipe_tags = {t.strip().lower() for t in (recipe["tags"] or "").split(",") if t.strip()}
+                return all(t.lower() in recipe_tags for t in selected_tags)
+            recipes = [r for r in recipes if matches_tags(r)]
+
+    all_tags_rows = db.execute("SELECT tags FROM recipes WHERE tags IS NOT NULL AND tags != ''").fetchall()
+    all_tags = sorted({tag.strip() for row in all_tags_rows for tag in row["tags"].split(",") if tag.strip()})
+
     all_ingredients = db.execute("SELECT name FROM ingredients ORDER BY name").fetchall()
-    return render_template("search.html", recipes=recipes, all_ingredients=all_ingredients, selected=selected)
+    return render_template(
+        "search.html",
+        recipes=recipes,
+        all_ingredients=all_ingredients,
+        selected=selected,
+        all_tags=all_tags,
+        selected_tags=selected_tags,
+    )

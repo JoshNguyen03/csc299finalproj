@@ -4,7 +4,12 @@
 <h1>All Recipes</h1>
 <ul>
     {% for recipe in recipes %}
-    <li><a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a></li>
+    <li style="display: flex; align-items: center; justify-content: space-between;">
+        <a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a>
+        <span>
+            {% if recipe['tags'] %}{% for tag in recipe['tags'].split(',') %}<a href="/search?tags={{ tag|trim }}" class="tag">{{ tag|trim }}</a>{% endfor %}{% endif %}
+        </span>
+    </li>
     {% else %}
     <li style="color: var(--text-dim);">No recipes yet. <a href="/recipe/new">Add one.</a></li>
     {% endfor %}

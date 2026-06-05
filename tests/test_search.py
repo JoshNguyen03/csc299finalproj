@@ -45,3 +45,49 @@ def test_search_page_lists_all_available_ingredients(seeded, client):
     response = client.get("/search")
     assert b"flour" in response.data
     assert b"milk" in response.data
+
+
+def test_search_finds_recipe_by_tag(seeded, client):
+    """Selecting a tag that belongs to a recipe returns that recipe."""
+    response = client.get("/search?tags=vegetarian")
+    assert b"Pancakes" in response.data
+
+
+def test_search_tag_excludes_non_matching_recipes(seeded, client, app):
+    """Recipes that don't have the selected tag are excluded."""
+    with app.app_context():
+        from app import get_db
+        db = get_db()
+        db.execute("INSERT INTO recipes (name, instructions, tags) VALUES ('Steak', 'Grill.', 'meat')")
+        db.commit()
+
+    response = client.get("/search?tags=vegetarian")
+    assert b"Pancakes" in response.data
+    assert b"Steak" not in response.data
+
+
+def test_search_tag_and_ingredient_combined(seeded, client):
+    """Both tag and ingredient filters must be satisfied."""
+    response = client.get("/search?tags=vegetarian&ingredients=flour")
+    assert b"Pancakes" in response.data
+
+
+def test_search_tag_and_ingredient_no_overlap(seeded, client, app):
+    """A recipe matching the tag but not the ingredient is excluded when both filters are active."""
+    with app.app_context():
+        from app import get_db
+        db = get_db()
+        db.execute("INSERT INTO recipes (name, instructions, tags) VALUES ('Oatmeal', 'Cook oats.', 'vegetarian')")
+        db.execute("INSERT INTO ingredients (name) VALUES ('oats')")
+        db.execute("INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES (2, 3, '1', 'cup')")
+        db.commit()
+
+    response = client.get("/search?tags=vegetarian&ingredients=flour")
+    assert b"Pancakes" in response.data
+    assert b"Oatmeal" not in response.data
+
+
+def test_search_page_lists_all_available_tags(seeded, client):
+    """The search page shows all tags as selectable options."""
+    response = client.get("/search")
+    assert b"vegetarian" in response.data
