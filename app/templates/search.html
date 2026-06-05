@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Search Recipes{% endblock %}
+{% block content %}
+<h1>Search by Ingredient</h1>
+<form method="get" action="/search">
+    {% for ing in all_ingredients %}
+    <label>
+        <input type="checkbox" name="ingredients" value="{{ ing['name'] }}"
+            {% if ing['name'] in selected %}checked{% endif %}>
+        {{ ing['name'] }}
+    </label><br>
+    {% endfor %}
+    <button type="submit">Find Recipes</button>
+</form>
+
+{% if recipes %}
+<h2>Matching Recipes</h2>
+<ul>
+    {% for recipe in recipes %}
+    <li><a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a></li>
+    {% endfor %}
+</ul>
+{% elif selected %}
+<p>No recipes found with those ingredients.</p>
+{% endif %}
+{% endblock %}
