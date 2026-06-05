@@ -6,6 +6,8 @@
 For my project I want to make a personal interactive cookbook. It will use recipes as nodes and things like ingredients, time, etc. as relations similar to the concept graph.
 I want to be able to search up recipes depending on the selected ingredients allowing me to figure out what I can make with what I have. The cookbook should recommend subsitutions for ingredients.
 
+The project will be a web application built with Flask (Python) serving server-rendered HTML pages via Jinja2 templates. Recipe and ingredient data will be stored in a SQLite database, queried through Python's built-in sqlite3 module. There is no separate frontend framework or REST API — Flask handles both the backend logic and page rendering directly.
+
 Potential features:
 - Dietary filters/tags (vegetarian, vegan, gluten-free, etc.)
 - Recipe scaling for different serving sizes
