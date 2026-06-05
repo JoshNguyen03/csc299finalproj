@@ -174,6 +174,11 @@ def delete_recipe(recipe_id):
     return redirect(url_for("main.index"))
 
 
+@main.route("/measurements")
+def measurements():
+    return render_template("measurements.html")
+
+
 @main.route("/plan")
 def plan():
     db = get_db()

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Measurements{% endblock %}
+{% block content %}
+<h1>Measurements</h1>
+
+<h2>Abbreviations</h2>
+<table>
+    <thead><tr><th>Abbrev.</th><th>Full name</th></tr></thead>
+    <tbody>
+        <tr><td>tsp &nbsp;/ t</td><td>teaspoon</td></tr>
+        <tr><td>tbsp / T</td><td>tablespoon</td></tr>
+        <tr><td>c</td><td>cup</td></tr>
+        <tr><td>pt</td><td>pint</td></tr>
+        <tr><td>qt</td><td>quart</td></tr>
+        <tr><td>gal</td><td>gallon</td></tr>
+        <tr><td>fl oz</td><td>fluid ounce</td></tr>
+        <tr><td>oz</td><td>ounce (weight)</td></tr>
+        <tr><td>lb</td><td>pound</td></tr>
+        <tr><td>g</td><td>gram</td></tr>
+        <tr><td>kg</td><td>kilogram</td></tr>
+        <tr><td>mL</td><td>milliliter</td></tr>
+        <tr><td>L</td><td>liter</td></tr>
+    </tbody>
+</table>
+
+<h2>Volume</h2>
+<table>
+    <thead><tr><th>Teaspoons</th><th>Tablespoons</th><th>Cups</th><th>Fluid oz</th><th>Milliliters</th></tr></thead>
+    <tbody>
+        <tr><td>1 tsp</td><td>⅓ tbsp</td><td>—</td><td>⅙ fl oz</td><td>5 mL</td></tr>
+        <tr><td>3 tsp</td><td>1 tbsp</td><td>1/16 cup</td><td>½ fl oz</td><td>15 mL</td></tr>
+        <tr><td>6 tsp</td><td>2 tbsp</td><td>⅛ cup</td><td>1 fl oz</td><td>30 mL</td></tr>
+        <tr><td>12 tsp</td><td>4 tbsp</td><td>¼ cup</td><td>2 fl oz</td><td>60 mL</td></tr>
+        <tr><td>24 tsp</td><td>8 tbsp</td><td>½ cup</td><td>4 fl oz</td><td>120 mL</td></tr>
+        <tr><td>48 tsp</td><td>16 tbsp</td><td>1 cup</td><td>8 fl oz</td><td>240 mL</td></tr>
+        <tr><td>—</td><td>—</td><td>2 cups</td><td>16 fl oz</td><td>480 mL &nbsp;(1 pint)</td></tr>
+        <tr><td>—</td><td>—</td><td>4 cups</td><td>32 fl oz</td><td>960 mL &nbsp;(1 quart)</td></tr>
+        <tr><td>—</td><td>—</td><td>16 cups</td><td>128 fl oz</td><td>3.8 L &nbsp;&nbsp;(1 gallon)</td></tr>
+    </tbody>
+</table>
+
+<h2>Weight</h2>
+<table>
+    <thead><tr><th>US (Imperial)</th><th>Metric</th></tr></thead>
+    <tbody>
+        <tr><td>1 oz</td><td>28 g</td></tr>
+        <tr><td>4 oz</td><td>113 g</td></tr>
+        <tr><td>8 oz &nbsp;(½ lb)</td><td>227 g</td></tr>
+        <tr><td>12 oz &nbsp;(¾ lb)</td><td>340 g</td></tr>
+        <tr><td>16 oz &nbsp;(1 lb)</td><td>454 g</td></tr>
+        <tr><td>2.2 lb</td><td>1 kg</td></tr>
+    </tbody>
+</table>
+
+<h2>Oven Temperature</h2>
+<table>
+    <thead><tr><th>Description</th><th>Fahrenheit</th><th>Celsius</th></tr></thead>
+    <tbody>
+        <tr><td>Very low</td><td>250 °F</td><td>120 °C</td></tr>
+        <tr><td>Low</td><td>300 °F</td><td>150 °C</td></tr>
+        <tr><td>Moderate</td><td>350 °F</td><td>175 °C</td></tr>
+        <tr><td>Moderately hot</td><td>375 °F</td><td>190 °C</td></tr>
+        <tr><td>Hot</td><td>400 °F</td><td>200 °C</td></tr>
+        <tr><td>Very hot</td><td>450 °F</td><td>230 °C</td></tr>
+    </tbody>
+</table>
+{% endblock %}
