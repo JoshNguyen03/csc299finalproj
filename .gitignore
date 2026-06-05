@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+cookbook.db
+flask_out.txt
+flask_err.txt
