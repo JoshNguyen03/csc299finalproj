@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}New Recipe{% endblock %}
+{% block content %}
+<h1>Add a Recipe</h1>
+<form method="post" action="/recipe/new">
+    <label>Name<br>
+        <input type="text" name="name" required>
+    </label><br><br>
+
+    <label>Prep Time (minutes)<br>
+        <input type="number" name="prep_time" min="0">
+    </label><br><br>
+
+    <label>Cook Time (minutes)<br>
+        <input type="number" name="cook_time" min="0">
+    </label><br><br>
+
+    <label>Servings<br>
+        <input type="number" name="servings" min="1">
+    </label><br><br>
+
+    <label>Tags (comma-separated, e.g. vegan, gluten-free)<br>
+        <input type="text" name="tags">
+    </label><br><br>
+
+    <h2>Ingredients</h2>
+    <table id="ingredients-table">
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody id="ingredients-body">
+            <tr>
+                <td><input type="text" name="ingredient_name" placeholder="e.g. flour"></td>
+                <td><input type="text" name="ingredient_quantity" placeholder="e.g. 2"></td>
+                <td><input type="text" name="ingredient_unit" placeholder="e.g. cups"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="button" onclick="addRow()">+ Add Ingredient</button><br><br>
+
+    <label>Instructions<br>
+        <textarea name="instructions" rows="8" cols="60"></textarea>
+    </label><br><br>
+
+    <button type="submit">Save Recipe</button>
+</form>
+
+<script>
+    function addRow() {
+        const tbody = document.getElementById("ingredients-body");
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td><input type="text" name="ingredient_name" placeholder="e.g. flour"></td>
+            <td><input type="text" name="ingredient_quantity" placeholder="e.g. 2"></td>
+            <td><input type="text" name="ingredient_unit" placeholder="e.g. cups"></td>
+        `;
+        tbody.appendChild(row);
+    }
+</script>
+{% endblock %}
