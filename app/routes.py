@@ -13,8 +13,7 @@ def save_ingredients(db, recipe_id, names, quantities, units, substitutes):
         existing = db.execute("SELECT id FROM ingredients WHERE name = ?", (ing_name,)).fetchone()
         if existing:
             ing_id = existing["id"]
-            if subs.strip():
-                db.execute("UPDATE ingredients SET substitutes = ? WHERE id = ?", (subs.strip(), ing_id))
+            db.execute("UPDATE ingredients SET substitutes = ? WHERE id = ?", (subs.strip() or None, ing_id))
         else:
             cur = db.execute(
                 "INSERT INTO ingredients (name, substitutes) VALUES (?, ?)",
