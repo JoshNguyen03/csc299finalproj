@@ -3,25 +3,30 @@
 {% block content %}
 <h1>Add a Recipe</h1>
 <form method="post" action="/recipe/new">
-    <label>Name<br>
+    <div class="form-group">
+        <label>Name</label>
         <input type="text" name="name" required>
-    </label><br><br>
+    </div>
 
-    <label>Prep Time (minutes)<br>
-        <input type="number" name="prep_time" min="0">
-    </label><br><br>
+    <div style="display: flex; gap: 16px;">
+        <div class="form-group" style="flex: 1;">
+            <label>Prep Time (min)</label>
+            <input type="number" name="prep_time" min="0">
+        </div>
+        <div class="form-group" style="flex: 1;">
+            <label>Cook Time (min)</label>
+            <input type="number" name="cook_time" min="0">
+        </div>
+        <div class="form-group" style="flex: 1;">
+            <label>Servings</label>
+            <input type="number" name="servings" min="1">
+        </div>
+    </div>
 
-    <label>Cook Time (minutes)<br>
-        <input type="number" name="cook_time" min="0">
-    </label><br><br>
-
-    <label>Servings<br>
-        <input type="number" name="servings" min="1">
-    </label><br><br>
-
-    <label>Tags (comma-separated, e.g. vegan, gluten-free)<br>
+    <div class="form-group">
+        <label>Tags (comma-separated, e.g. vegan, gluten-free)</label>
         <input type="text" name="tags">
-    </label><br><br>
+    </div>
 
     <h2>Ingredients</h2>
     <table id="ingredients-table">
@@ -42,11 +47,12 @@
             </tr>
         </tbody>
     </table>
-    <button type="button" onclick="addRow()">+ Add Ingredient</button><br><br>
+    <button type="button" onclick="addRow()" style="margin-bottom: 24px;">+ Add Ingredient</button>
 
-    <label>Instructions<br>
-        <textarea name="instructions" rows="8" cols="60"></textarea>
-    </label><br><br>
+    <div class="form-group">
+        <label>Instructions</label>
+        <textarea name="instructions" rows="10"></textarea>
+    </div>
 
     <button type="submit">Save Recipe</button>
 </form>

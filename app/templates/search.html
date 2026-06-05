@@ -3,13 +3,15 @@
 {% block content %}
 <h1>Search by Ingredient</h1>
 <form method="get" action="/search">
-    {% for ing in all_ingredients %}
-    <label>
-        <input type="checkbox" name="ingredients" value="{{ ing['name'] }}"
-            {% if ing['name'] in selected %}checked{% endif %}>
-        {{ ing['name'] }}
-    </label><br>
-    {% endfor %}
+    <div class="ingredient-grid">
+        {% for ing in all_ingredients %}
+        <label>
+            <input type="checkbox" name="ingredients" value="{{ ing['name'] }}"
+                {% if ing['name'] in selected %}checked{% endif %}>
+            {{ ing['name'] }}
+        </label>
+        {% endfor %}
+    </div>
     <button type="submit">Find Recipes</button>
 </form>
 
@@ -21,6 +23,6 @@
     {% endfor %}
 </ul>
 {% elif selected %}
-<p>No recipes found with those ingredients.</p>
+<p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes found with those ingredients.</p>
 {% endif %}
 {% endblock %}
