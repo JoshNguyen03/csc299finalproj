@@ -12,7 +12,16 @@
 <div class="meta" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;">
     <span>prep {{ recipe['prep_time'] or '—' }} min</span>
     <span>cook {{ recipe['cook_time'] or '—' }} min</span>
-    <span>serves {{ recipe['servings'] or '—' }}</span>
+    {% if recipe['servings'] %}
+    <form method="get" action="/recipe/{{ recipe['id'] }}" style="display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+        <span>serves</span>
+        <input type="number" name="servings" min="1" value="{{ display_servings }}"
+               style="width: 52px; padding: 2px 4px; font-size: 12px; font-family: inherit;">
+        <button type="submit" style="padding: 2px 8px; font-size: 11px;">scale</button>
+    </form>
+    {% else %}
+    <span>serves —</span>
+    {% endif %}
     {% if recipe['tags'] %}{% for tag in recipe['tags'].split(',') %}<a href="/search?tags={{ tag|trim }}" class="tag">{{ tag|trim }}</a>{% endfor %}{% endif %}
 </div>
 

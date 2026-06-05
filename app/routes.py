@@ -1,7 +1,34 @@
+from fractions import Fraction
 from flask import Blueprint, render_template, request, redirect, url_for
 from . import get_db
 
 main = Blueprint("main", __name__)
+
+
+def _parse_quantity(s):
+    """Return a float for a quantity string, or None if it can't be parsed."""
+    s = (s or "").strip()
+    if not s:
+        return None
+    try:
+        parts = s.split()
+        if len(parts) == 2:
+            return float(Fraction(parts[0])) + float(Fraction(parts[1]))
+        return float(Fraction(s))
+    except (ValueError, ZeroDivisionError):
+        return None
+
+
+def _format_quantity(value):
+    """Format a float as a readable fraction/mixed-number string."""
+    frac = Fraction(value).limit_denominator(16)
+    if frac.denominator == 1:
+        return str(frac.numerator)
+    whole = frac.numerator // frac.denominator
+    remainder = frac.numerator % frac.denominator
+    if whole:
+        return f"{whole} {remainder}/{frac.denominator}"
+    return f"{frac.numerator}/{frac.denominator}"
 
 
 def save_ingredients(db, recipe_id, names, quantities, units, substitutes):
@@ -64,12 +91,26 @@ def new_recipe():
 def recipe(recipe_id):
     db = get_db()
     r = db.execute("SELECT * FROM recipes WHERE id = ?", (recipe_id,)).fetchone()
-    ingredients = db.execute(
+    rows = db.execute(
         "SELECT i.name, i.substitutes, ri.quantity, ri.unit FROM ingredients i "
         "JOIN recipe_ingredients ri ON i.id = ri.ingredient_id "
         "WHERE ri.recipe_id = ?", (recipe_id,)
     ).fetchall()
-    return render_template("recipe.html", recipe=r, ingredients=ingredients)
+
+    requested = request.args.get("servings", type=int)
+    original = r["servings"]
+    display_servings = requested if (requested and requested > 0) else original
+
+    ingredients = []
+    for row in rows:
+        ing = dict(row)
+        if requested and requested > 0 and original and original > 0 and requested != original:
+            parsed = _parse_quantity(ing["quantity"])
+            if parsed is not None:
+                ing["quantity"] = _format_quantity(parsed * requested / original)
+        ingredients.append(ing)
+
+    return render_template("recipe.html", recipe=r, ingredients=ingredients, display_servings=display_servings)
 
 
 @main.route("/recipe/<int:recipe_id>/edit", methods=["GET", "POST"])

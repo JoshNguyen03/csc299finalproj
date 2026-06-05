@@ -145,3 +145,37 @@ def test_delete_recipe_redirects_home(seeded, client):
     response = client.post("/recipe/1/delete", follow_redirects=False)
     assert response.status_code == 302
     assert response.headers["Location"] == "/"
+
+
+def test_recipe_default_shows_original_servings(seeded, client):
+    """Without a ?servings param the form input shows the recipe's original serving count."""
+    response = client.get("/recipe/1")
+    assert b'value="4"' in response.data
+
+
+def test_recipe_scales_quantities_up(seeded, client):
+    """Requesting double the servings doubles numeric ingredient quantities."""
+    response = client.get("/recipe/1?servings=8")
+    assert b"4 cups" in response.data   # flour: 2 cups * 2 = 4 cups
+
+
+def test_recipe_scales_quantities_down(seeded, client):
+    """Requesting half the servings halves numeric ingredient quantities."""
+    response = client.get("/recipe/1?servings=2")
+    assert b"1 cups" in response.data   # flour: 2 cups / 2 = 1 cup
+    assert b"1/2" in response.data      # milk: 1 cup / 2 = 1/2
+
+
+def test_recipe_non_numeric_quantity_unchanged(seeded, client, app):
+    """Non-numeric quantities such as 'to taste' are left unchanged when scaling."""
+    with app.app_context():
+        from app import get_db
+        db = get_db()
+        db.execute("INSERT INTO ingredients (name) VALUES ('salt')")
+        db.execute(
+            "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) "
+            "VALUES (1, 3, 'to taste', '')"
+        )
+        db.commit()
+    response = client.get("/recipe/1?servings=8")
+    assert b"to taste" in response.data
