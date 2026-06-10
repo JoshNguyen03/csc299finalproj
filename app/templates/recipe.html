@@ -3,17 +3,18 @@
 {% block content %}
 <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px;">
     <h1 style="margin-bottom: 0; border-bottom: none;">{{ recipe['name'] }}</h1>
-    <a href="/recipe/{{ recipe['id'] }}/edit" class="btn" style="font-size: 12px;">edit</a>
-    <form method="post" action="/recipe/{{ recipe['id'] }}/delete" style="display:inline;"
+    <a href="/recipe/{{ recipe['id'] }}/edit" class="btn no-print" style="font-size: 12px;">edit</a>
+    <form method="post" action="/recipe/{{ recipe['id'] }}/delete" class="no-print" style="display:inline;"
           onsubmit="return confirm('Delete this recipe?')">
         <button type="submit" style="font-size: 12px; color: #c05a5a; border-color: #5a2a2a;">delete</button>
     </form>
-    <form method="post" action="/recipe/{{ recipe['id'] }}/favorite" style="display:inline;">
+    <form method="post" action="/recipe/{{ recipe['id'] }}/favorite" class="no-print" style="display:inline;">
         <button type="submit" style="font-size: 15px; border-color: transparent;
             {% if recipe['is_favorite'] %}color: #c8972a;{% else %}color: var(--text-muted);{% endif %}">
             {{ '★' if recipe['is_favorite'] else '☆' }}
         </button>
     </form>
+    <button type="button" class="btn no-print" style="font-size: 12px;" onclick="window.print()">print</button>
 </div>
 <div class="meta" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;">
     <span>prep {{ recipe['prep_time'] or '—' }} min</span>
@@ -23,7 +24,7 @@
         <span>serves</span>
         <input type="number" name="servings" min="1" value="{{ display_servings }}"
                style="width: 52px; padding: 2px 4px; font-size: 12px; font-family: inherit;">
-        <button type="submit" style="padding: 2px 8px; font-size: 11px;">scale</button>
+        <button type="submit" class="no-print" style="padding: 2px 8px; font-size: 11px;">scale</button>
     </form>
     {% else %}
     <span>serves —</span>

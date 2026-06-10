@@ -166,6 +166,18 @@ def test_recipe_scales_quantities_down(seeded, client):
     assert b"1/2" in response.data      # milk: 1 cup / 2 = 1/2
 
 
+def test_recipe_page_has_print_button(seeded, client):
+    """The recipe page includes a print button that triggers window.print()."""
+    response = client.get("/recipe/1")
+    assert b"window.print()" in response.data
+
+
+def test_recipe_page_marks_controls_no_print(seeded, client):
+    """Edit/delete/favorite controls are marked so they're hidden when printing."""
+    response = client.get("/recipe/1")
+    assert b"no-print" in response.data
+
+
 def test_recipe_non_numeric_quantity_unchanged(seeded, client, app):
     """Non-numeric quantities such as 'to taste' are left unchanged when scaling."""
     with app.app_context():

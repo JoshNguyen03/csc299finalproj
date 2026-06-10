@@ -429,3 +429,48 @@ footer {
     color: var(--text-muted);
     flex-shrink: 0;
 }
+
+/* Print */
+@media print {
+    header, footer, .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+        display: block;
+    }
+
+    main {
+        max-width: none;
+        padding: 0;
+    }
+
+    h1, h2 {
+        color: #000;
+        border-color: #000;
+    }
+
+    a {
+        color: #000;
+    }
+
+    .meta, .instructions, ul li, ul li small {
+        color: #000;
+    }
+
+    ul li {
+        border-color: #ccc;
+    }
+
+    .tag {
+        color: #000;
+        border-color: #999;
+    }
+
+    input, button {
+        color: #000;
+        border-color: #999;
+    }
+}
