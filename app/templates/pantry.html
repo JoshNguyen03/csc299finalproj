@@ -44,7 +44,21 @@
     </li>
     {% endfor %}
 </ul>
-{% elif pantry_items %}
+{% endif %}
+
+{% if almost_recipes %}
+<h2>Almost There</h2>
+<ul>
+    {% for entry in almost_recipes %}
+    <li style="display: flex; align-items: center; justify-content: space-between;">
+        <a href="/recipe/{{ entry.recipe['id'] }}">{{ entry.recipe['name'] }}</a>
+        <small>missing: {{ entry.missing|join(', ') }}</small>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if pantry_items and not recipes and not almost_recipes %}
 <p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes can be made with what's in your pantry yet.</p>
 {% endif %}
 {% endblock %}

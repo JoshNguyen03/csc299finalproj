@@ -66,11 +66,10 @@ def test_pantry_full_match_shows_recipe(seeded, client):
 
 
 def test_pantry_partial_match_excludes_recipe(seeded, client):
-    """Missing one required ingredient excludes the recipe from results."""
+    """Missing a required ingredient means the recipe isn't listed as fully makeable."""
     client.post("/pantry/add", data={"name": "flour"})
     response = client.get("/pantry")
-    assert b"Pancakes" not in response.data
-    assert b"No recipes can be made" in response.data
+    assert b"You Can Make" not in response.data
 
 
 def test_pantry_extra_ingredients_still_match(seeded, client, app):
@@ -84,3 +83,39 @@ def test_pantry_extra_ingredients_still_match(seeded, client, app):
     client.post("/pantry/add", data={"name": "sugar"})
     response = client.get("/pantry")
     assert b"Pancakes" in response.data
+
+
+def test_pantry_almost_makeable_shows_missing_ingredient(seeded, client):
+    """Missing exactly one ingredient lists the recipe as 'almost there' with what's missing."""
+    client.post("/pantry/add", data={"name": "flour"})
+    response = client.get("/pantry")
+    assert b"Almost There" in response.data
+    assert b"Pancakes" in response.data
+    assert b"missing: milk" in response.data
+
+
+def test_pantry_almost_makeable_excludes_fully_makeable(seeded, client):
+    """A recipe that's fully makeable doesn't also appear in 'almost there'."""
+    client.post("/pantry/add", data={"name": "flour"})
+    client.post("/pantry/add", data={"name": "milk"})
+    response = client.get("/pantry")
+    assert b"Almost There" not in response.data
+
+
+def test_pantry_almost_makeable_excludes_recipes_missing_too_many(seeded, client, app):
+    """A recipe missing more than two ingredients doesn't appear in 'almost there'."""
+    with app.app_context():
+        from app import get_db
+        db = get_db()
+        db.execute("INSERT INTO recipes (name, instructions) VALUES ('Stew', 'Simmer.')")
+        db.execute("INSERT INTO ingredients (name) VALUES ('beef')")
+        db.execute("INSERT INTO ingredients (name) VALUES ('carrot')")
+        db.execute("INSERT INTO ingredients (name) VALUES ('potato')")
+        db.execute("INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES (2, 3, '1', 'lb')")
+        db.execute("INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES (2, 4, '2', '')")
+        db.execute("INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit) VALUES (2, 5, '2', '')")
+        db.commit()
+
+    client.post("/pantry/add", data={"name": "flour"})
+    response = client.get("/pantry")
+    assert b"Stew" not in response.data

@@ -250,6 +250,7 @@ def pantry():
     pantry_names = [item["name"].lower() for item in pantry_items]
 
     recipes = []
+    almost_recipes = []
     if pantry_names:
         placeholders = ",".join("?" * len(pantry_names))
         recipes = db.execute(
@@ -262,8 +263,38 @@ def pantry():
             pantry_names
         ).fetchall()
 
+        almost_rows = db.execute(
+            f"SELECT r.*, COUNT(*) - SUM(CASE WHEN LOWER(i.name) IN ({placeholders}) THEN 1 ELSE 0 END) AS missing_count "
+            f"FROM recipes r "
+            f"JOIN recipe_ingredients ri ON r.id = ri.recipe_id "
+            f"JOIN ingredients i ON i.id = ri.ingredient_id "
+            f"GROUP BY r.id "
+            f"HAVING missing_count BETWEEN 1 AND 2 "
+            f"ORDER BY missing_count, r.name",
+            pantry_names
+        ).fetchall()
+
+        for row in almost_rows:
+            missing = db.execute(
+                f"SELECT i.name FROM recipe_ingredients ri "
+                f"JOIN ingredients i ON i.id = ri.ingredient_id "
+                f"WHERE ri.recipe_id = ? AND LOWER(i.name) NOT IN ({placeholders}) "
+                f"ORDER BY i.name",
+                [row["id"]] + pantry_names
+            ).fetchall()
+            almost_recipes.append({
+                "recipe": row,
+                "missing": [m["name"] for m in missing],
+            })
+
     all_ingredients = db.execute("SELECT name FROM ingredients ORDER BY name").fetchall()
-    return render_template("pantry.html", recipes=recipes, pantry_items=pantry_items, all_ingredients=all_ingredients)
+    return render_template(
+        "pantry.html",
+        recipes=recipes,
+        almost_recipes=almost_recipes,
+        pantry_items=pantry_items,
+        all_ingredients=all_ingredients,
+    )
 
 
 @main.route("/pantry/add", methods=["POST"])
