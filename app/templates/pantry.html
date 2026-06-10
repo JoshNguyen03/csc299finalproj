@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Pantry{% endblock %}
+{% block content %}
+<h1>What Can I Make?</h1>
+<p style="color: var(--text-dim); font-size: 13px; margin-top: -8px;">
+    Select the ingredients you have on hand. We'll show recipes you can make without buying anything else.
+</p>
+<form method="get" action="/pantry">
+    <div class="ingredient-grid">
+        {% for ing in all_ingredients %}
+        <label>
+            <input type="checkbox" name="ingredients" value="{{ ing['name'] }}"
+                {% if ing['name'] in selected %}checked{% endif %}>
+            {{ ing['name'] }}
+        </label>
+        {% endfor %}
+    </div>
+    <button type="submit" style="margin-top: 4px;">Find Recipes</button>
+</form>
+
+{% if recipes %}
+<h2>You Can Make</h2>
+<ul>
+    {% for recipe in recipes %}
+    <li style="display: flex; align-items: center; justify-content: space-between;">
+        <a href="/recipe/{{ recipe['id'] }}">{{ recipe['name'] }}</a>
+        <span>
+            {% if recipe['tags'] %}{% for tag in recipe['tags'].split(',') %}<a href="/search?tags={{ tag|trim }}" class="tag">{{ tag|trim }}</a>{% endfor %}{% endif %}
+        </span>
+    </li>
+    {% endfor %}
+</ul>
+{% elif selected %}
+<p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes can be made with only those ingredients.</p>
+{% endif %}
+{% endblock %}

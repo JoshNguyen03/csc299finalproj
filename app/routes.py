@@ -243,6 +243,28 @@ def shopping_list():
     return render_template("shopping_list.html", items=items)
 
 
+@main.route("/pantry")
+def pantry():
+    db = get_db()
+    selected = request.args.getlist("ingredients")
+
+    recipes = []
+    if selected:
+        placeholders = ",".join("?" * len(selected))
+        recipes = db.execute(
+            f"SELECT r.* FROM recipes r "
+            f"JOIN recipe_ingredients ri ON r.id = ri.recipe_id "
+            f"JOIN ingredients i ON i.id = ri.ingredient_id "
+            f"GROUP BY r.id "
+            f"HAVING COUNT(*) = SUM(CASE WHEN i.name IN ({placeholders}) THEN 1 ELSE 0 END) "
+            f"ORDER BY r.name",
+            selected
+        ).fetchall()
+
+    all_ingredients = db.execute("SELECT name FROM ingredients ORDER BY name").fetchall()
+    return render_template("pantry.html", recipes=recipes, all_ingredients=all_ingredients, selected=selected)
+
+
 @main.route("/search")
 def search():
     db = get_db()
