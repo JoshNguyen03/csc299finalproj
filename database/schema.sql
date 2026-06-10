@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS meal_plan (
     FOREIGN KEY (recipe_id) REFERENCES recipes(id)
 );
 
+CREATE TABLE IF NOT EXISTS pantry_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS recipe_ingredients (
     recipe_id INTEGER NOT NULL,
     ingredient_id INTEGER NOT NULL,

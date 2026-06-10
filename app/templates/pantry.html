@@ -3,20 +3,34 @@
 {% block content %}
 <h1>What Can I Make?</h1>
 <p style="color: var(--text-dim); font-size: 13px; margin-top: -8px;">
-    Select the ingredients you have on hand. We'll show recipes you can make without buying anything else.
+    Add ingredients you have on hand. We'll show recipes you can make without buying anything else.
 </p>
-<form method="get" action="/pantry">
-    <div class="ingredient-grid">
+
+<form method="post" action="/pantry/add" style="display: flex; gap: 6px; margin-bottom: 16px; max-width: 320px;">
+    <input type="text" name="name" placeholder="e.g. flour" list="ingredient-options" required>
+    <datalist id="ingredient-options">
         {% for ing in all_ingredients %}
-        <label>
-            <input type="checkbox" name="ingredients" value="{{ ing['name'] }}"
-                {% if ing['name'] in selected %}checked{% endif %}>
-            {{ ing['name'] }}
-        </label>
+        <option value="{{ ing['name'] }}">
         {% endfor %}
-    </div>
-    <button type="submit" style="margin-top: 4px;">Find Recipes</button>
+    </datalist>
+    <button type="submit">Add</button>
 </form>
+
+<h2>My Pantry</h2>
+{% if pantry_items %}
+<ul style="margin-bottom: 24px;">
+    {% for item in pantry_items %}
+    <li style="display: flex; align-items: center; justify-content: space-between;">
+        {{ item['name'] }}
+        <form method="post" action="/pantry/remove/{{ item['id'] }}" style="display:inline;">
+            <button type="submit" style="font-size: 12px; color: #c05a5a; border-color: transparent;">×</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p style="color: var(--text-dim); margin-bottom: 24px; font-size: 13px;">Your pantry is empty — add some ingredients to get started.</p>
+{% endif %}
 
 {% if recipes %}
 <h2>You Can Make</h2>
@@ -30,7 +44,7 @@
     </li>
     {% endfor %}
 </ul>
-{% elif selected %}
-<p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes can be made with only those ingredients.</p>
+{% elif pantry_items %}
+<p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes can be made with what's in your pantry yet.</p>
 {% endif %}
 {% endblock %}

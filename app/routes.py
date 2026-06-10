@@ -246,23 +246,44 @@ def shopping_list():
 @main.route("/pantry")
 def pantry():
     db = get_db()
-    selected = request.args.getlist("ingredients")
+    pantry_items = db.execute("SELECT * FROM pantry_items ORDER BY name").fetchall()
+    pantry_names = [item["name"].lower() for item in pantry_items]
 
     recipes = []
-    if selected:
-        placeholders = ",".join("?" * len(selected))
+    if pantry_names:
+        placeholders = ",".join("?" * len(pantry_names))
         recipes = db.execute(
             f"SELECT r.* FROM recipes r "
             f"JOIN recipe_ingredients ri ON r.id = ri.recipe_id "
             f"JOIN ingredients i ON i.id = ri.ingredient_id "
             f"GROUP BY r.id "
-            f"HAVING COUNT(*) = SUM(CASE WHEN i.name IN ({placeholders}) THEN 1 ELSE 0 END) "
+            f"HAVING COUNT(*) = SUM(CASE WHEN LOWER(i.name) IN ({placeholders}) THEN 1 ELSE 0 END) "
             f"ORDER BY r.name",
-            selected
+            pantry_names
         ).fetchall()
 
     all_ingredients = db.execute("SELECT name FROM ingredients ORDER BY name").fetchall()
-    return render_template("pantry.html", recipes=recipes, all_ingredients=all_ingredients, selected=selected)
+    return render_template("pantry.html", recipes=recipes, pantry_items=pantry_items, all_ingredients=all_ingredients)
+
+
+@main.route("/pantry/add", methods=["POST"])
+def pantry_add():
+    db = get_db()
+    name = request.form.get("name", "").strip()
+    if name:
+        existing = db.execute("SELECT id FROM pantry_items WHERE LOWER(name) = LOWER(?)", (name,)).fetchone()
+        if not existing:
+            db.execute("INSERT INTO pantry_items (name) VALUES (?)", (name,))
+            db.commit()
+    return redirect(url_for("main.pantry"))
+
+
+@main.route("/pantry/remove/<int:item_id>", methods=["POST"])
+def pantry_remove(item_id):
+    db = get_db()
+    db.execute("DELETE FROM pantry_items WHERE id = ?", (item_id,))
+    db.commit()
+    return redirect(url_for("main.pantry"))
 
 
 @main.route("/search")

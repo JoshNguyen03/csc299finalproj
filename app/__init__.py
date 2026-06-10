@@ -46,6 +46,16 @@ def _migrate_db():
             "FOREIGN KEY (recipe_id) REFERENCES recipes(id))"
         )
         db.commit()
+    pantry_table = db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='pantry_items'"
+    ).fetchone()
+    if not pantry_table:
+        db.execute(
+            "CREATE TABLE pantry_items ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "name TEXT NOT NULL UNIQUE)"
+        )
+        db.commit()
 
 def get_db():
     from flask import current_app
