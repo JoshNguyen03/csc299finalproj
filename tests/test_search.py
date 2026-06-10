@@ -91,3 +91,41 @@ def test_search_page_lists_all_available_tags(seeded, client):
     """The search page shows all tags as selectable options."""
     response = client.get("/search")
     assert b"vegetarian" in response.data
+
+
+def test_search_finds_recipe_by_name(seeded, client):
+    """A text query matching the recipe name returns that recipe, case-insensitively."""
+    response = client.get("/search?q=pancake")
+    assert b"Pancakes" in response.data
+
+
+def test_search_finds_recipe_by_instructions(seeded, client):
+    """A text query matching the instructions returns that recipe."""
+    response = client.get("/search?q=mix")
+    assert b"Pancakes" in response.data
+
+
+def test_search_text_excludes_non_matching_recipes(seeded, client, app):
+    """A text query that doesn't match a recipe's name or instructions excludes it."""
+    with app.app_context():
+        from app import get_db
+        db = get_db()
+        db.execute("INSERT INTO recipes (name, instructions) VALUES ('Salad', 'Toss the greens.')")
+        db.commit()
+
+    response = client.get("/search?q=pancake")
+    assert b"Pancakes" in response.data
+    assert b"Salad" not in response.data
+
+
+def test_search_text_with_no_match_shows_message(seeded, client):
+    """A text query with no matches shows the no-results message."""
+    response = client.get("/search?q=lasagna")
+    assert b"Pancakes" not in response.data
+    assert b"No recipes found matching those filters." in response.data
+
+
+def test_search_text_and_tag_combined(seeded, client):
+    """A text query and a tag filter must both be satisfied."""
+    response = client.get("/search?q=pancake&tags=vegetarian")
+    assert b"Pancakes" in response.data

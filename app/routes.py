@@ -270,9 +270,10 @@ def search():
     db = get_db()
     selected = request.args.getlist("ingredients")
     selected_tags = request.args.getlist("tags")
+    query = request.args.get("q", "").strip()
 
     recipes = []
-    if selected or selected_tags:
+    if selected or selected_tags or query:
         if selected:
             placeholders = ",".join("?" * len(selected))
             recipes = db.execute(
@@ -291,6 +292,13 @@ def search():
                 return all(t.lower() in recipe_tags for t in selected_tags)
             recipes = [r for r in recipes if matches_tags(r)]
 
+        if query:
+            q_lower = query.lower()
+            recipes = [
+                r for r in recipes
+                if q_lower in (r["name"] or "").lower() or q_lower in (r["instructions"] or "").lower()
+            ]
+
     all_tags_rows = db.execute("SELECT tags FROM recipes WHERE tags IS NOT NULL AND tags != ''").fetchall()
     all_tags = sorted({tag.strip() for row in all_tags_rows for tag in row["tags"].split(",") if tag.strip()})
 
@@ -302,4 +310,5 @@ def search():
         selected=selected,
         all_tags=all_tags,
         selected_tags=selected_tags,
+        query=query,
     )

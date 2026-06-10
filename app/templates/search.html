@@ -3,6 +3,9 @@
 {% block content %}
 <h1>Search Recipes</h1>
 <form method="get" action="/search">
+    <h2>Search by Name or Instructions</h2>
+    <input type="text" name="q" value="{{ query }}" placeholder="e.g. pancakes" style="width: 100%; max-width: 320px; margin-bottom: 20px;">
+
     {% if all_tags %}
     <h2>Filter by Tag</h2>
     <div class="ingredient-grid" style="margin-bottom: 20px;">
@@ -41,7 +44,7 @@
     </li>
     {% endfor %}
 </ul>
-{% elif selected or selected_tags %}
+{% elif selected or selected_tags or query %}
 <p style="color: var(--text-dim); margin-top: 16px; font-size: 13px;">No recipes found matching those filters.</p>
 {% endif %}
 {% endblock %}
